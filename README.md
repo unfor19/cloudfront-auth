@@ -1,3 +1,72 @@
+## Requirements
+1. You're working with a terminal that supports Bash
+   - Linux / MacOS: you're already covered
+   - Windows: download and install [Git Bash for Windows](https://github.com/git-for-windows/git/releases/tag/v2.24.0.windows.2)
+1. Clone this repo
+   ```
+   home $: git clone https://github.com/devops-internal/cloudfront-auth.git
+   home $: cd cloudfront-auth
+   ```
+1. Download and install: [NodeJS LTS](https://nodejs.org/en/download/) and [yarn](https://yarnpkg.com/lang/en/docs/install/)
+1. Install [serverless-framework](https://serverless.com/framework/docs/getting-started/) globally with yarn
+   ```
+   cloudfront-auth $: yarn global add serverless-framework
+   ```
+1. Install this package's dependencies
+   ```
+   cloudfront-auth $: yarn install
+   ```
+
+That's it, your system is now ready to build and deploy
+
+## Configuration
+1. Copy files the following so your configuration is hidden
+   ```
+   cloudfront-auth $: cp viewer-response.js .viewer-response.js
+   cloudfront-auth $: cp env .env
+   ```
+1. Fill in the values in `env`
+   - APPNAME (Required)
+   - BUCKET_DEPLOYMENT_STAGE (Required)
+   - VAULT_PROFILE_STAGE (Only if using [aws-vault](https://github.com/99designs/aws-vault#aws-vault))
+   - CLOUDFRONT_DIST_ID (Required)
+   - CLOUDFRONT_DIST_STACK_STAGE (BETA - irrelevant for now, leave empty)
+ 1. (Optional) Edit `.viewer-response.js` - for ease of use, each header in the [Content-Security-Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) is declared as an array which eventually turns into a string.
+
+## Auth0 (From original README)
+1. Create an account at [Auth0]
+1. Go to the **Dashboard** of your Auth0 admin page
+    1. Click **New Application**
+    1. Select **Regular Web App** and click **Create**.
+    1. Now select an application type and follow the steps for 'Quick Start' or use your own app.
+    1. Go to application **Settings** and enter required details. In **Allowed Callback URLs** enter your Cloudfront hostname with your preferred path value for the authorization callback. Example: `https://my-cloudfront-site.example.com/_callback`
+1. Choose `AUTH0` as the authorization method and enter the values for Base URL (Auth0 Domain), Client ID, Client Secret, Redirect URI, and Session Duration
+1. Upload the resulting `zip` file found in your distribution folder using the AWS Lambda console and jump to the [configuration step](#configure-lambda-and-cloudfront)
+
+## Build
+1. Installs dependencies if necessary, executes build/build.js and then zips `.viewer-response.js`
+   ```
+   yarn build
+   ```
+1. In the prompts, fill in the values:
+   - Enter distribution name: CloudFront distribution ID, for example `E1TU2EGCZDDALR`
+   - Base URL: COPY-PASTE, for example `dev-aqualalala.eu.auth0.com`
+   - Client ID: COPY-PASTE
+   - Client Secret: COPY-PASTE
+   - Redirect URI: https://my-cloudfront-site.example.com/_callback
+   - Session Duration (Hours): 10
+
+## Deploy
+1. Following the build, you can deploy the lambda functions ViewerResponse and ViewerRequest. Use the command deploy followed by `:STAGE`, some examples:
+   - `yarn deploy:dev`
+   - `yarn deploy:staging`
+   - `yarn deploy:vault-dev`
+1. Go to your AWS Console and update your CloudFront's Default Behavior with the relevant event and lambda function ARN. For example:
+   - #TODO
+
+
+
+# Original README.md
 [Google Apps (G Suite)](https://developers.google.com/identity/protocols/OpenIDConnect), [Microsoft Azure AD](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-protocols-oauth-code), [GitHub](https://developer.github.com/apps/building-oauth-apps/authorization-options-for-oauth-apps/), [OKTA](https://www.okta.com/), [Auth0](https://auth0.com/), [Centrify](https://centrify.com) authentication for [CloudFront](https://aws.amazon.com/cloudfront/) using [Lambda@Edge](http://docs.aws.amazon.com/lambda/latest/dg/lambda-edge.html). The original use case for `cloudfront-auth` was to serve private S3 content over HTTPS without running a proxy server in EC2 to authenticate requests; but `cloudfront-auth` can be used authenticate requests of any Cloudfront origin configuration.
 
 ## Description

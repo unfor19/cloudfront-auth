@@ -13,3 +13,6 @@ tests/logs/*
 tests/config
 /distributions
 packaged.yaml
+.*
+viewer-response.zip
+_viewer-response.js

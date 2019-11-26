@@ -490,7 +490,7 @@ function auth0Configuration() {
   }, function(err, result) {
     config.PRIVATE_KEY = fs.readFileSync('distributions/' + config.DISTRIBUTION + '/id_rsa', 'utf8');
     config.PUBLIC_KEY = fs.readFileSync('distributions/' + config.DISTRIBUTION + '/id_rsa.pub', 'utf8');
-    config.DISCOVERY_DOCUMENT = result.BASE_URL + '/.well-known/openid-configuration';
+    config.DISCOVERY_DOCUMENT = 'https://' + result.BASE_URL + '/.well-known/openid-configuration';
     config.SESSION_DURATION = parseInt(result.SESSION_DURATION, 10) * 60 * 60;
 
     config.BASE_URL = result.BASE_URL;

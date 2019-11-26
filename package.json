@@ -4,8 +4,21 @@
   "description": "An AWS Cloudfront Lambda@Edge function to authenticate requests using Google Apps, Microsoft, GitHub login, OKTA & Auth0",
   "main": "index.js",
   "scripts": {
-    "test": "cd tests && npm install && cd .. && node tests/tests.js",
-    "build": "npm install && cd build && npm install && cd .. && node build/build.js"
+    "test": "cd tests && yarn install && cd .. && node tests/tests.js",
+    "wrap": "rm -f viewer-response.zip && cp .viewer-response.js _viewer-response.js && zip viewer-response.zip ./_viewer-response.js && rm -f _viewer-response.js",
+    "build": "yarn install && cd build && yarn install && cd .. && node build/build.js && yarn wrap",
+    "deploy:vault-dev": "export $(cat .env) && aws-vault exec ${VAULT_PROFILE_DEV} -- sls deploy --verbose --stage=dev --CLOUDFRONT_DIST_ID=${CLOUDFRONT_DIST_ID_DEV} --DEPLOYMENT_BUCKET=${BUCKET_DEPLOYMENT_DEV}",
+    "deploy:vault-staging": "export $(cat .env) && aws-vault exec ${VAULT_PROFILE_STAGING} -- sls deploy --verbose --stage=staging --CLOUDFRONT_DIST_ID=${CLOUDFRONT_DIST_ID_STAGING} --DEPLOYMENT_BUCKET=${BUCKET_DEPLOYMENT_STAGING}",
+    "deploy:vault-prod": "export $(cat .env) && aws-vault exec ${VAULT_PROFILE_PROD} -- sls deploy --verbose --stage=prod --CLOUDFRONT_DIST_ID=${CLOUDFRONT_DIST_ID_PROD} --DEPLOYMENT_BUCKET=${BUCKET_DEPLOYMENT_PROD}",
+    "deploy:dev": "sls deploy --verbose --stage=dev",
+    "deploy:staging": "sls deploy --verbose --stage=staging",
+    "deploy:prod": "sls deploy --verbose --stage=prod",
+    "destroy:vault-dev": "export $(cat .env) && aws-vault exec ${VAULT_PROFILE_DEV} -- sls remove --verbose --stage=dev",
+    "destroy:vault-staging": "export $(cat .env) && aws-vault exec ${VAULT_PROFILE_STAGING} -- sls remove --verbose --stage=staging",
+    "destroy:vault-prod": "export $(cat .env) && aws-vault exec ${VAULT_PROFILE_PROD} -- sls remove --verbose --stage=prod",
+    "destroy:dev": "sls remove --verbose --stage=dev",
+    "destroy:staging": "sls remove --verbose --stage=staging",
+    "destroy:prod": "sls remove --verbose --stage=prod"
   },
   "author": "Widen Enterprises",
   "repository": "github:widen/cloudfront-auth",
@@ -19,5 +32,10 @@
     "nonce": "^1.0.4",
     "querystring": "^0.2.0",
     "url": "^0.11.0"
+  },
+  "devDependencies": {
+    "@types/node": "^12.12.14",
+    "aws-sdk": "^2.579.0",
+    "fs": "^0.0.1-security"
   }
 }

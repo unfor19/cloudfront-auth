@@ -1,0 +1,66 @@
+service: "${env:APPNAME}-lambdaedge"
+
+frameworkVersion: ">=1.1.0 <2.0.0"
+
+# This is super important since we're packing this with zip and not with `serverless package`
+package:
+  individually: true
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  memorySize: 128 # a must for lambda@edge
+  stage: "${opt:stage}"
+  region: us-east-1 # CloudFront associated functions have to be deployed to the us-east-1 region
+  deploymentBucket:
+    name: ${opt:DEPLOYMENT_BUCKET, "${self:service}-deployment-${self:provider.stage}"}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - logs:CreateLogGroup
+        - logs:CreateLogStream
+        - logs:PutLogEvents
+      Resource: "arn:aws:logs:*:*:*"
+
+functions:
+  lambdaEdgeViewerRequest:
+    deploymentSettings:
+      type: AllAtOnce # a must for lambda@edge
+      alias: Live # a must for lambda@edge
+    timeout: 5 # a must for lambda@edge
+    role: lambdaAtEdgeRole # case sensitive
+    handler: index.handler
+    package:
+      artifact: "distributions/${opt:CLOUDFRONT_DIST_ID}/${opt:CLOUDFRONT_DIST_ID}.zip"
+
+  lambdaEdgeViewerResponse:
+    deploymentSettings:
+      type: AllAtOnce # a must for lambda@edge
+      alias: Live # a must for lambda@edge
+    timeout: 5 # a must for lambda@edge
+    role: lambdaAtEdgeRole # case sensitive
+    handler: _viewer-response.handler
+    package:
+      artifact: "viewer-response.zip"
+      
+resources:
+  Resources:
+    lambdaAtEdgeRole: # case sensitive
+      Type: "AWS::IAM::Role"
+      Properties:
+        Path: "/"
+        RoleName: ${self:service}-role-${self:provider.stage}
+        ManagedPolicyArns:
+          - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            -
+              Sid: "AllowLambdaServiceToAssumeRole"
+              Effect: "Allow"
+              Action:
+                - "sts:AssumeRole"
+              Principal:
+                Service:
+                  - "lambda.amazonaws.com"
+                  - "edgelambda.amazonaws.com"  

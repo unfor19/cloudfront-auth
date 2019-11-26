@@ -7,4 +7,5 @@ if [ ! -d "distributions" ]; then
   fi
 fi
 
-npm run-script build
+# npm run-script build
+yarn build
