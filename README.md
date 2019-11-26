@@ -34,15 +34,13 @@ That's it, your system is now ready to build and deploy
  1. (Optional) Edit `.viewer-response.js` - for ease of use, each header in the [Content-Security-Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) is declared as an array which eventually turns into a string.
 
 ## Auth0 (From original README)
-1. Create an account at [Auth0]
+1. Create an account at [Auth0](https://auth0.com/)
 1. Go to the **Dashboard** of your Auth0 admin page
-    1. Click **New Application**
-    1. Select **Regular Web App** and click **Create**.
-    1. Now select an application type and follow the steps for 'Quick Start' or use your own app.
-    1. Go to application **Settings** and enter required details. In **Allowed Callback URLs** enter your Cloudfront hostname with your preferred path value for the authorization callback. Example: `https://my-cloudfront-site.example.com/_callback`
-1. Choose `AUTH0` as the authorization method and enter the values for Base URL (Auth0 Domain), Client ID, Client Secret, Redirect URI, and Session Duration
-1. Upload the resulting `zip` file found in your distribution folder using the AWS Lambda console and jump to the [configuration step](#configure-lambda-and-cloudfront)
-
+1. Click **New Application**
+1. Select **Regular Web App** and click **Create**.
+1. Now select an application type and follow the steps for 'Quick Start' or use your own app.
+1. Go to application **Settings** and enter required details. In **Allowed Callback URLs** enter your Cloudfront hostname with your preferred path value for the authorization callback.
+   - Example: `https://my-cloudfront-site.example.com/_callback`
 ## Build
 1. Installs dependencies if necessary, executes build/build.js and then zips `.viewer-response.js`
    ```
