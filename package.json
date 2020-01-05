@@ -6,7 +6,7 @@
   "scripts": {
     "test": "cd tests && yarn install && cd .. && node tests/tests.js",
     "wrap": "rm -f viewer-response.zip && cp .viewer-response.js _viewer-response.js && zip viewer-response.zip ./_viewer-response.js && rm -f _viewer-response.js",
-    "build": "yarn install && cd build && yarn install && cd .. && node build/build.js && yarn wrap",
+    "build": "yarn install --production && cd build && yarn install --production && cd .. && node build/build.js && yarn wrap",
     "deploy:vault-dev": "export $(cat .env) && aws-vault exec ${VAULT_PROFILE_DEV} -- sls deploy --verbose --stage=dev --CLOUDFRONT_DIST_ID=${CLOUDFRONT_DIST_ID_DEV} --DEPLOYMENT_BUCKET=${BUCKET_DEPLOYMENT_DEV}",
     "deploy:vault-staging": "export $(cat .env) && aws-vault exec ${VAULT_PROFILE_STAGING} -- sls deploy --verbose --stage=staging --CLOUDFRONT_DIST_ID=${CLOUDFRONT_DIST_ID_STAGING} --DEPLOYMENT_BUCKET=${BUCKET_DEPLOYMENT_STAGING}",
     "deploy:vault-prod": "export $(cat .env) && aws-vault exec ${VAULT_PROFILE_PROD} -- sls deploy --verbose --stage=prod --CLOUDFRONT_DIST_ID=${CLOUDFRONT_DIST_ID_PROD} --DEPLOYMENT_BUCKET=${BUCKET_DEPLOYMENT_PROD}",
@@ -26,16 +26,15 @@
   "dependencies": {
     "axios": "^0.18.1",
     "cookie": "^0.3.1",
-    "crypto": "^1.0.1",
     "jsonwebtoken": "^8.1.0",
     "jwk-to-pem": "^1.2.6",
     "nonce": "^1.0.4",
-    "querystring": "^0.2.0",
     "url": "^0.11.0"
   },
   "devDependencies": {
     "@types/node": "^12.12.14",
     "aws-sdk": "^2.579.0",
-    "fs": "^0.0.1-security"
+    "fs": "^0.0.1-security",
+    "querystring": "^0.2.0"
   }
 }

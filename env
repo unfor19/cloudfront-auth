@@ -1,8 +1,8 @@
 APPNAME=myapp
 
-BUCKET_DEPLOYMENT_DEV=cf-templates-deploymentbucket-us-east-1
-BUCKET_DEPLOYMENT_STAGING=cf-templates-deploymentbucket-us-east-1
-BUCKET_DEPLOYMENT_PROD=cf-templates-deploymentbucket-us-east-1
+BUCKET_DEPLOYMENT_DEV=
+BUCKET_DEPLOYMENT_STAGING=
+BUCKET_DEPLOYMENT_PROD=
 
 VAULT_PROFILE_DEV=
 VAULT_PROFILE_STAGING=
