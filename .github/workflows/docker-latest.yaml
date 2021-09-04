@@ -46,6 +46,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
+          platforms: linux/amd64,linux/arm64
           builder: ${{ steps.buildx.outputs.name }}
           file: ${{ matrix.Dockerfile }}
           build-args: |
@@ -58,6 +59,20 @@ jobs:
             ${{ steps.prepare.outputs.docker_tag_release }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Push to DockerHub
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ steps.prepare.outputs.docker_tag_latest }}
+            ${{ steps.prepare.outputs.docker_tag_release }}
       - name: Move cache
         run: |
           rm -rf /tmp/.buildx-cache
