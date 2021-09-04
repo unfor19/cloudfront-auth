@@ -11,8 +11,10 @@ auth.js
 tests/logs/*
 !tests/logs/.gitkeep
 tests/config
-/distributions
+distributions
 packaged.yaml
 .*
 viewer-response.zip
 _viewer-response.js
+out/
+!.*ignore*

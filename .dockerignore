@@ -1,0 +1,12 @@
+**
+!authn/
+!authz/
+!build/
+!build-ci/
+!ci/
+!build.sh
+!code-challenge.js
+!nonce.js
+!package.json
+!yarn.lock
+.*

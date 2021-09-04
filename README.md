@@ -1,41 +1,8 @@
 ## Requirements
 
-1. You're working with a terminal that supports Bash
-   - Linux / MacOS: you're already covered
-   - Windows: download and install [Git Bash for Windows](https://github.com/git-for-windows/git/releases/tag/v2.24.0.windows.2)
-1. Clone this repo
-   ```
-   home $: git clone https://github.com/devops-internal/cloudfront-auth.git
-   home $: cd cloudfront-auth
-   ```
-1. Download and install: [NodeJS LTS](https://nodejs.org/en/download/) and [yarn](https://yarnpkg.com/lang/en/docs/install/)
-1. Install [serverless-framework](https://serverless.com/framework/docs/getting-started/) globally with yarn
-   ```
-   cloudfront-auth $: yarn global add serverless-framework
-   ```
-1. Install this package's dependencies
-   ```
-   cloudfront-auth $: yarn install
-   ```
+- Docker
 
-That's it, your system is now ready to build and deploy
-
-## Configuration
-
-1. Copy files the following so your configuration is hidden
-   ```
-   cloudfront-auth $: cp viewer-response.js .viewer-response.js
-   cloudfront-auth $: cp env .env
-   ```
-1. Fill in the values in `env`
-   - APPNAME (Required)
-   - BUCKET_DEPLOYMENT_STAGE (Required)
-   - VAULT_PROFILE_STAGE (Only if using [aws-vault](https://github.com/99designs/aws-vault#aws-vault))
-   - CLOUDFRONT_DIST_ID (Required)
-   - CLOUDFRONT_DIST_STACK_STAGE (BETA - irrelevant for now, leave empty)
-1. (Optional) Edit `.viewer-response.js` - for ease of use, each header in the [Content-Security-Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) is declared as an array which eventually turns into a string.
-
-## Auth0 (From original README)
+## Getting Started
 
 1. Create an account at [Auth0](https://auth0.com/)
 1. Go to the **Dashboard** of your Auth0 admin page
@@ -44,6 +11,22 @@ That's it, your system is now ready to build and deploy
 1. Now select an application type and follow the steps for 'Quick Start' or use your own app.
 1. Go to application **Settings** and enter required details. In **Allowed Callback URLs** enter your Cloudfront hostname with your preferred path value for the authorization callback.
    - Example: `https://my-cloudfront-site.example.com/_callback`
+
+1. Build the package with docker
+   ```bash
+   docker run --rm -it --env-file .env unfor19/cloudfront-auth
+   ```
+
+```bash
+AUTH_CLOUDFRONT_DIST_ID="E1TU2EGCZDDALR"
+AUTHN="GOOGLE" # Identity Provider (IdP)
+AUTH_CLIENT_ID="myClientId" 
+AUTH_CLIENT_SECRET="myClientSecret"
+AUTH_REDIRECT_URI="http://localhost:8080/dev/oauth2/callback" 
+AUTH_HOST_DOMAIN="dev-aqualalala.eu.auth0.com" # Provided per IdP
+AUTH_SESSION_DURATION_HOURS=12
+AUTH_AUTHZ="HOSTED_DOMAIN"
+```
 
 ## Build
 
@@ -70,6 +53,10 @@ That's it, your system is now ready to build and deploy
    - #TODO
 
 # Original README.md
+
+<details>
+
+<summary>Expand/Collapse</summary>
 
 [Google Apps (G Suite)](https://developers.google.com/identity/protocols/OpenIDConnect), [Microsoft Azure AD](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-protocols-oauth-code), [GitHub](https://developer.github.com/apps/building-oauth-apps/authorization-options-for-oauth-apps/), [OKTA](https://www.okta.com/), [Auth0](https://auth0.com/), [Centrify](https://centrify.com) authentication for [CloudFront](https://aws.amazon.com/cloudfront/) using [Lambda@Edge](http://docs.aws.amazon.com/lambda/latest/dg/lambda-edge.html). The original use case for `cloudfront-auth` was to serve private S3 content over HTTPS without running a proxy server in EC2 to authenticate requests; but `cloudfront-auth` can be used authenticate requests of any Cloudfront origin configuration.
 
@@ -225,3 +212,5 @@ All contributions are welcome. Please create an issue in order open up communica
 When implementing a new flow or using an already implemented flow, be sure to follow the same style used in `build.js`. The config.json file should have an object for each request made. For example, `openid.index.js` converts config.AUTH_REQUEST and config.TOKEN_REQUEST to querystrings for simplified requests (after adding dynamic variables such as state or nonce). For implementations that are not generic (most), endpoints are hardcoded in to the config (or discovery documents).
 
 Be considerate of our [limitations](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cloudfront-limits.html#limits-lambda-at-edge). The zipped function can be no more than 1MB in size and execution cannot take longer than 5 seconds, so we must pay close attention to the size of our dependencies and complexity of operations.
+
+</details>
