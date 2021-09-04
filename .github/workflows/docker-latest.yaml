@@ -61,6 +61,22 @@ jobs:
             ${{ steps.prepare.outputs.docker_tag_release }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
+      - name: Load Image For Test
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          platforms: linux/amd64
+          builder: ${{ steps.buildx.outputs.name }}
+          file: ${{ matrix.Dockerfile }}
+          build-args: |
+            NODE_VERSION=${{ matrix.NODE_VERSION }}
+            ALPINE_VERSION=${{ matrix.ALPINE_VERSION }}
+          target: ${{ matrix.DOCKER_BUILD_TARGET }}
+          push: false
+          tags: |
+            ${{ steps.prepare.outputs.docker_tag_latest }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
           load: true
       - name: Test Docker Image
         run: |
