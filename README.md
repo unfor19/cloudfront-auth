@@ -28,30 +28,6 @@ AUTH_SESSION_DURATION_HOURS=12
 AUTH_AUTHZ="HOSTED_DOMAIN"
 ```
 
-## Build
-
-1. Installs dependencies if necessary, executes build/build.js and then zips `.viewer-response.js`
-   ```
-   yarn build
-   ```
-1. In the prompts, fill in the values:
-   - Enter distribution name: CloudFront distribution ID, for example `E1TU2EGCZDDALR`
-   - Select an authentication method: (5) Auth0
-   - Base URL: COPY-PASTE, for example `dev-aqualalala.eu.auth0.com`
-   - Client ID: COPY-PASTE
-   - Client Secret: COPY-PASTE
-   - Redirect URI: https://my-cloudfront-site.example.com/_callback
-   - Session Duration (Hours): 10
-
-## Deploy
-
-1. Following the build, you can deploy the lambda functions ViewerResponse and ViewerRequest. Use the command deploy followed by `:STAGE`, some examples:
-   - `yarn deploy:dev`
-   - `yarn deploy:staging`
-   - `yarn deploy:vault-dev`
-1. Go to your AWS Console and update your CloudFront's Default Behavior with the relevant event and lambda function ARN. For example:
-   - #TODO
-
 # Original README.md
 
 <details>
