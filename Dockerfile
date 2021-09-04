@@ -1,4 +1,7 @@
-FROM node:14-alpine3.14 as base
+ARG NODE_VERSION="14"
+ARG ALPINE_VERSION="3.14"
+
+FROM node:${NODE_VERSION}-alpine${ALPINE_VERSION} as base
 RUN apk add --no-cache --update bash openssh-keygen openssl zip
 SHELL ["bash", "-c"]
 WORKDIR /usr/src/app/

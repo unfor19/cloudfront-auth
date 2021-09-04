@@ -18,3 +18,5 @@ viewer-response.zip
 _viewer-response.js
 out/
 !.*ignore*
+!.github
+*.zip

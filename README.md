@@ -12,10 +12,15 @@
 1. Go to application **Settings** and enter required details. In **Allowed Callback URLs** enter your Cloudfront hostname with your preferred path value for the authorization callback.
    - Example: `https://my-cloudfront-site.example.com/_callback`
 
-1. Build the package with docker
+1. Run a container that will build your customized Lambda@Edge function
    ```bash
-   docker run --rm -it --env-file .env unfor19/cloudfront-auth
+   docker run --rm -it --env-file .env -v "$PWD":/usr/src/app/out/ cloudfront-auth
+   # Check for a new ZIP file in PWD, named after your CloudFront Distribution ID, like `E1TU2EGCZDDALR.zip`
    ```
+
+### Environment Variables
+
+Pass the following environment variables, currently supports only `AUTHN=GOOGLE` and `AUTH_AUTHZ=HOST_DOMAIN`.
 
 ```bash
 AUTH_CLOUDFRONT_DIST_ID="E1TU2EGCZDDALR"
@@ -27,6 +32,45 @@ AUTH_HOST_DOMAIN="dev-aqualalala.eu.auth0.com" # Provided per IdP
 AUTH_SESSION_DURATION_HOURS=12
 AUTH_AUTHZ="HOSTED_DOMAIN"
 ```
+
+## Local Development
+
+Clone or fork this repository.
+
+### App Docker Image
+
+1. **Build** a Docker image
+   ```bash
+   docker build -t cloudfront-auth .
+   ```
+1. **Run** a Docker container
+   ```bash
+   # Copy `env` to `.env`, or pass environment variables with `-e MY_VAR=MY_VALUE`
+   docker run --rm -it --env-file .env -v "$PWD":/usr/src/app/out/ cloudfront-auth
+   ```
+1. **Artifact**: The final artifact after running running the container will be a ZIP file, like `E1TU2EGCZDDALR.zip`. The ZIP file is a ready-to-deploy [**Viewer-Request** Lambda@Edge Function](https://docs.aws.amazon.com/lambda/latest/dg/lambda-edge.html).
+
+TODO: Add code snippets of how to automatically deploy this function as part of CloudFormation/Terraform.
+
+### Development Docker Image
+
+1. **Build** a Docker image
+   ```bash
+   docker build -t cloudfront-auth:dev --target=dev .
+   ```
+1. **Run** a Docker container
+   ```bash
+   # Copy `env` to `.env`, or pass environment variables with `-e MY_VAR=MY_VALUE`
+   docker run --rm -it --env-file .env -v "$PWD":/usr/src/app/ cloudfront-auth:dev
+   ```
+2. **Build app in container**
+  ```bash
+  # Make sure you set environment variables according to the `env` file before executing this command
+  yarn build:ci
+  ```
+- **Artifact**: check the directories `/usr/src/app/distributions` and `/usr/src/app/out`
+
+### Run 
 
 # Original README.md
 
