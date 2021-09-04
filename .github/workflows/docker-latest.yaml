@@ -81,7 +81,7 @@ jobs:
       - name: Test Docker Image
         run: |
           cp env .env
-          docker run --rm -it --env-file .env -v "$PWD":/usr/src/app/out/ ${{ steps.prepare.outputs.docker_tag_latest }}
+          docker run --rm -i --env-file .env -v "$PWD":/usr/src/app/out/ ${{ steps.prepare.outputs.docker_tag_latest }}
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
