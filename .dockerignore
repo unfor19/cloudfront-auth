@@ -9,4 +9,5 @@
 !nonce.js
 !package.json
 !yarn.lock
+node_modules
 .*
