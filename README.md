@@ -14,7 +14,8 @@
 
 1. Run a container that will build your customized Lambda@Edge function
    ```bash
-   docker run --rm -it --env-file .env -v "$PWD":/usr/src/app/out/ cloudfront-auth
+   # Copy `env` to `.env`, or pass environment variables with `-e MY_VAR=MY_VALUE`
+   docker run --rm -it --env-file .env -v "$PWD":/usr/src/app/out/ unfor19/cloudfront-auth
    # Check for a new ZIP file in PWD, named after your CloudFront Distribution ID, like `E1TU2EGCZDDALR.zip`
    ```
 
