@@ -200,10 +200,9 @@ Session duration is defined as the number of hours that the JWT is valid for. Af
 Detailed instructions on testing your function can be found [in the Wiki](https://github.com/Widen/cloudfront-auth/wiki/Debug-&-Test).
 
 ## Build Requirements
-
-- [npm](https://www.npmjs.com/) ^5.6.0
-- [node](https://nodejs.org/en/) ^8.10.0
-- [openssl](https://www.openssl.org)
+ - [npm](https://www.npmjs.com/) ^5.6.0
+ - [node](https://nodejs.org/en/) ^10.0
+ - [openssl](https://www.openssl.org)
 
 ## Contributing
 
