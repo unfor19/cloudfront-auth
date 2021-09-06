@@ -9,7 +9,12 @@ WORKDIR /usr/src/app/
 
 FROM base as dependencies
 COPY package*.json yarn.lock ./
-RUN yarn install --production
+RUN yarn install
+
+WORKDIR /usr/src/app/dist/
+COPY package*.json yarn.lock ./
+RUN yarn install --production 
+
 WORKDIR /usr/src/app/build/
 COPY build-ci/package*.json build-ci/yarn.lock ./
 RUN yarn install --production

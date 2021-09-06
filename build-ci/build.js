@@ -539,8 +539,8 @@ function zip(files) {
   for (var i = 0; i < files.length; i++) {
     filesString += " " + config.CURRENT_DIST_DIR_PATH + "/" + files[i] + " ";
   }
-  shell.exec('zip -q distributions/' + config.DISTRIBUTION + '/' + config.DISTRIBUTION + '.zip ' + 'package-lock.json package.json -r node_modules');
-  shell.exec('zip -q -r -j distributions/' + config.DISTRIBUTION + '/' + config.DISTRIBUTION + '.zip ' + filesString);
+  shell.exec('cd dist && zip -q -r ../' + config.CURRENT_DIST_DIR_PATH + '/' + config.DISTRIBUTION + '.zip ' + '*');
+  shell.exec('zip -q -r -j ' + config.CURRENT_DIST_DIR_PATH + '/' + config.DISTRIBUTION + '.zip ' + filesString);
 }
 
 function writeConfig(result, callback, files) {
