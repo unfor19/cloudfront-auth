@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -e
 source ci/logging.sh
+set -e
 set -o pipefail
 
 _AUTH_DISTRIBUTIONS_DIR_PATH="${AUTH_DISTRIBUTION_DIR_PATH:-"distributions"}"
@@ -21,7 +22,7 @@ fi
 
 export CURRENT_DIST_DIR_PATH="$_CURRENT_DIST_DIR_PATH"
 log_msg "Building package ..."
-node build-ci/build.js
+node ci/build.js
 log_msg "Completed Building package"
 
 log_msg "Contents of ${_CURRENT_DIST_DIR_PATH}"
