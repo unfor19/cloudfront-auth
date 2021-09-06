@@ -12,9 +12,11 @@ _AUTH_IDRSA_PATH="${AUTH_IDRSA_PATH:-"${_CURRENT_DIST_DIR_PATH}/id_rsa"}"
 _AUTH_IDRSAPUB_PATH="${AUTH_IDRSAPUB_PATH:-"${_CURRENT_DIST_DIR_PATH}/id_rsa.pub"}"
 
 if [[ ! -f "$_AUTH_IDRSA_PATH" ]]; then
-    ssh-keygen -t rsa -m PEM -b 4096 -f "$_AUTH_IDRSA_PATH" -N ''
+    log_msg "Generating the pem key: ${_AUTH_IDRSA_PATH}"
+    ssh-keygen -t rsa -m PEM -b 4096 -f "$_AUTH_IDRSA_PATH" -N '' 1>/dev/null
     [[ -f "$_AUTH_IDRSA_PATH" ]] && rm "$_AUTH_IDRSAPUB_PATH"
-    openssl rsa -in "${_CURRENT_DIST_DIR_PATH}/id_rsa" -pubout -outform PEM -out "$_AUTH_IDRSAPUB_PATH"
+    log_msg "Generating the pub key: ${_AUTH_IDRSAPUB_PATH}"
+    openssl rsa -in "${_CURRENT_DIST_DIR_PATH}/id_rsa" -pubout -outform PEM -out "$_AUTH_IDRSAPUB_PATH" 1>/dev/null
 fi
 
 export CURRENT_DIST_DIR_PATH="$_CURRENT_DIST_DIR_PATH"
