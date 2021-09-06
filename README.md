@@ -1,38 +1,72 @@
+# cloudfront-auth
+
+**Work-In-Progress (WIP)**
+
+An attempt to automate the build process of AWS Lambda@Edge function, that is used for authentication and authorization.
+
 ## Requirements
 
 - Docker
 
 ## Getting Started
 
-1. Create an account at [Auth0](https://auth0.com/)
-1. Go to the **Dashboard** of your Auth0 admin page
-1. Click **New Application**
-1. Select **Regular Web App** and click **Create**.
-1. Now select an application type and follow the steps for 'Quick Start' or use your own app.
-1. Go to application **Settings** and enter required details. In **Allowed Callback URLs** enter your Cloudfront hostname with your preferred path value for the authorization callback.
-   - Example: `https://my-cloudfront-site.example.com/_callback`
+### Configure an Identity Provider (IdP)
 
-1. Run a container that will build your customized Lambda@Edge function
+#### Google SSO
+
+<details>
+
+<summary>Expand/Collapse</summary>
+
+### Create Google's Credentials
+
+1. [Google Developer Console](https://console.cloud.google.com/apis/dashboard?pli=1) > [Create a New Project](https://console.cloud.google.com/projectcreate?previousPage=%2Fapis%2Fdashboard%3Fproject%3Dkubemaster-me&folder=&organizationId=0)
+    - Project Name: `app`
+    - Organization: Leave empty
+2. [OAuth consent screen](https://console.cloud.google.com/apis/credentials/consent) > Select **External** > Click **CREATE**
+    - App name: `app`
+    - User support email: `your email address`
+    - Authorised domains > Add domain > `example.com`
+    - Developer contact information: `your email address`
+    Click **SAVE AND CONTINUE**
+3. **Scopes** > Click **SAVE AND CONTINTUE** - there's no need for a scope, we don't plan on using Google APIs (authorization), we just need the authentication mechanism (OAuth2/OIDC)
+4. (Optional) **Test users** > Click **SAVE AND CONTINTUE** - it's irrelevant since either way we're allowing any Google user to login to the app since it's a local app
+5. **Summary** > Click **BACK TO DASHBOARD** 
+6. **NOTE**: There's no need to **PUBLISH APP**, keep it in sandbox mode
+7. [Credentials](https://console.cloud.google.com/apis/credentials) > Click **CREATE CREDENTIALS** > Select **OAuth Client ID** > Select Application type **Web application**
+    - Name: `app-sso`
+    - Authorised JavaScript origins **ADD URI** > `https://app.example.com`
+    - Authorised redirect URIs **ADD URI** > `https://app.example.com/callback`
+    Click **CREATE**
+    - Save **Your Client ID** and **Your Client Secret** in a safe place, we'll use them in the following section
+
+</details>
+
+### Build The Function Locally
+
+1. Set environment variables according to your application and IdP, either with `export MY_VAR=MY_VALUE` or with the `.env` file
    ```bash
-   # Copy `env` to `.env`, or pass environment variables with `-e MY_VAR=MY_VALUE`
-   docker run --rm -it --env-file .env -v "$PWD":/usr/src/app/out/ unfor19/cloudfront-auth
-   # Check for a new ZIP file in PWD, named after your CloudFront Distribution ID, like `E1TU2EGCZDDALR.zip`
+   AUTHN="GOOGLE" # Identity Provider (IdP)
+   AUTH_AUTHZ="HOSTED_DOMAIN" # Authorize by email domain   
+   AUTH_HOST_DOMAIN="example.com" # Only users with this domain will be authorized to login
+   AUTH_REDIRECT_URI="https://app.example.com/callback"
+   AUTH_CLIENT_ID="myClientId"
+   AUTH_CLIENT_SECRET="myClientSecret"
+   AUTH_CLOUDFRONT_DIST_ID="E1TU2EGCZDDALR"   
+   AUTH_SESSION_DURATION_HOURS=12
    ```
 
-### Environment Variables
+2. Run a container that will build your customized Lambda@Edge function
+   ```bash
+   # Copy `env` to `.env`, or pass environment variables with `-e MY_VAR=MY_VALUE`
+   docker run --rm -it --env-file .env -v "${PWD}/distributions/":/usr/src/app/distributions/ -v "${PWD}/out/":/usr/src/app/out/ unfor19/cloudfront-auth
+   # Check for a new ZIP file in PWD/out/, named after your CloudFront Distribution ID, like `E1TU2EGCZDDALR.zip`
+   ```
 
-Pass the following environment variables, currently supports only `AUTHN=GOOGLE` and `AUTH_AUTHZ=HOST_DOMAIN`.
+Some explanations about the Docker volume mounts
 
-```bash
-AUTH_CLOUDFRONT_DIST_ID="E1TU2EGCZDDALR"
-AUTHN="GOOGLE" # Identity Provider (IdP)
-AUTH_CLIENT_ID="myClientId" 
-AUTH_CLIENT_SECRET="myClientSecret"
-AUTH_REDIRECT_URI="http://localhost:8080/dev/oauth2/callback" 
-AUTH_HOST_DOMAIN="dev-aqualalala.eu.auth0.com" # Provided per IdP
-AUTH_SESSION_DURATION_HOURS=12
-AUTH_AUTHZ="HOSTED_DOMAIN"
-```
+1. `-v "${PWD}/distributions/":/usr/src/app/distributions/` - Contains a sub-directory per CloudFront Distribution Id. Each directory contains the artifacts that will be zipped per distribution. This mount is for debugging purposes, to see what's inside the package. Also, the `pem` and `pub` are generated only if they don't exist, so having this mount means you'll use the same `pem` and `pub` keys per distribution, instead of generating new ones.
+2. `-v "${PWD}/out/":/usr/src/app/out/` - Contains the final artifacts `${DISTRIBUTION_ID}.ZIP` files. The ZIP file is then uploaded as the Lambda@Edge function code.
 
 ## Local Development
 
@@ -47,7 +81,7 @@ Clone or fork this repository.
 1. **Run** a Docker container
    ```bash
    # Copy `env` to `.env`, or pass environment variables with `-e MY_VAR=MY_VALUE`
-   docker run --rm -it --env-file .env -v "$PWD":/usr/src/app/out/ cloudfront-auth
+   docker run --rm -it --env-file .env -v "${PWD}/distributions/":/usr/src/app/distributions/ -v "${PWD}/out/":/usr/src/app/out/ cloudfront-auth
    ```
 1. **Artifact**: The final artifact after running running the container will be a ZIP file, like `E1TU2EGCZDDALR.zip`. The ZIP file is a ready-to-deploy [**Viewer-Request** Lambda@Edge Function](https://docs.aws.amazon.com/lambda/latest/dg/lambda-edge.html).
 
@@ -64,12 +98,12 @@ TODO: Add code snippets of how to automatically deploy this function as part of 
    # Copy `env` to `.env`, or pass environment variables with `-e MY_VAR=MY_VALUE`
    docker run --rm -it --env-file .env -v "$PWD":/usr/src/app/ cloudfront-auth:dev
    ```
-2. **Build app in container**
+1. **Build app in container**
   ```bash
   # Make sure you set environment variables according to the `env` file before executing this command
   yarn build:ci
   ```
-- **Artifact**: check the directories `/usr/src/app/distributions` and `/usr/src/app/out`
+1. **Artifact**: check the directories `/usr/src/app/distributions` and `/usr/src/app/out`
 
 ### Run 
 
