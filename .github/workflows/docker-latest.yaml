@@ -20,6 +20,12 @@ jobs:
             NODE_VERSION: 14
             ALPINE_VERSION: 3.14
             PLATFORM: linux/amd64
+          - DOCKERFILE_PATH: Dockerfile
+            DOCKER_BUILD_TARGET: app
+            DOCKER_TAG_ONLY: latest
+            NODE_VERSION: 14
+            ALPINE_VERSION: 3.14
+            PLATFORM: linux/arm64
     steps:
       - uses: actions/checkout@v2
       - name: Prepare
