@@ -11,7 +11,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "node-rsa": "^0.4.2",
-    "ramda": "^0.25.0",
+    "ramda": "^0.27.1",
     "shelljs": "^0.8.4",
     "url": "^0.11.0"
   }
