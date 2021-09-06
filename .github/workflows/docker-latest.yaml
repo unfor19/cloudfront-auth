@@ -41,9 +41,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-v1-${{ github.sha }}
+          key: ${{ runner.os }}-buildx-v2-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-buildx-v1
+            ${{ runner.os }}-buildx-v2
       - name: Build Docker Image
         uses: docker/build-push-action@v2
         with:
