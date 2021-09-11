@@ -103,7 +103,7 @@ TODO: Add code snippets of how to automatically deploy this function as part of 
   # Make sure you set environment variables according to the `env` file before executing this command
   yarn build:ci
   ```
-1. **Artifact**: check the directories `/usr/src/app/distributions` and `/usr/src/app/out`
+4. **Artifact**: check the directories `/usr/src/app/distributions` and `/usr/src/app/out`
 
 ### Run 
 
