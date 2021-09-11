@@ -36,7 +36,7 @@ An attempt to automate the build process of AWS Lambda@Edge function, that is us
 7. [Credentials](https://console.cloud.google.com/apis/credentials) > Click **CREATE CREDENTIALS** > Select **OAuth Client ID** > Select Application type **Web application**
     - Name: `app-sso`
     - Authorised JavaScript origins **ADD URI** > `https://app.example.com`
-    - Authorised redirect URIs **ADD URI** > `https://app.example.com/callback`
+    - Authorised redirect URIs **ADD URI** > `https://app.example.com/_callback`
     Click **CREATE**
     - Save **Your Client ID** and **Your Client Secret** in a safe place, we'll use them in the following section
 
@@ -49,7 +49,7 @@ An attempt to automate the build process of AWS Lambda@Edge function, that is us
    AUTHN="GOOGLE" # Identity Provider (IdP)
    AUTH_AUTHZ="HOSTED_DOMAIN" # Authorize by email domain   
    AUTH_HOST_DOMAIN="example.com" # Only users with this domain will be authorized to login
-   AUTH_REDIRECT_URI="https://app.example.com/callback"
+   AUTH_REDIRECT_URI="https://app.example.com/_callback"
    AUTH_CLIENT_ID="myClientId"
    AUTH_CLIENT_SECRET="myClientSecret"
    AUTH_CLOUDFRONT_DIST_ID="E1TU2EGCZDDALR"   
